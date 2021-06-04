@@ -12,12 +12,14 @@ type TextItem struct {
 }
 
 func SelectEncryptedText(text string) (TextItem, error) {
+	var textItem TextItem
 	log.Printf("Enter selectEncryptedText")
 	results, err := Db.Query("SELECT * FROM fan_lang_dict WHERE encrypted_text = '" + text + "'")
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err.Error()) // proper error handling instead of panic in your app
+		return textItem, errors.New("DB error")
 	}
-	var textItem TextItem
+
 	textItem.DecryptedText = text
 	for results.Next() {
 		err = results.Scan(&textItem.ID, &textItem.EncryptedText, &textItem.DecryptedText)
@@ -35,4 +37,15 @@ func SelectEncryptedText(text string) (TextItem, error) {
 	}
 	log.Print("text '" + text + "' not in dict")
 	return textItem, errors.New("text '" + text + "' not in dict")
+}
+
+func InsertText(encryptedText string, decryptedText string) error {
+	log.Printf("Enter InsertText")
+	_, err := Db.Query("insert into fan_lang_dict (encrypted_text, decrypted_text) values ('"+
+		encryptedText+"', '"+decryptedText+"')")
+	if err != nil {
+		log.Fatal(err.Error()) // proper error handling instead of panic in your app
+		return errors.New("DB error")
+	}
+	return nil
 }

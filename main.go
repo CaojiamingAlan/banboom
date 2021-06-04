@@ -19,8 +19,17 @@ func main() {
 	})
 
 	r.GET("/dict", func(c *gin.Context) {
+		text := c.Query("text")
 		c.JSON(http.StatusOK, gin.H{
-			"message": service.TranslateText("yydsa"),
+			"message": service.TranslateText(text),
+		})
+	})
+
+	r.GET("/add", func(c *gin.Context) {
+		etext := c.Query("etext")
+		dtext := c.Query("dtext")
+		c.JSON(http.StatusOK, gin.H{
+			"message": mysql.InsertText(etext, dtext),
 		})
 	})
 
